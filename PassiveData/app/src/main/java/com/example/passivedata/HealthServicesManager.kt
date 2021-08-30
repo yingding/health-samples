@@ -55,7 +55,7 @@ class HealthServicesManager @Inject constructor(
     suspend fun registerForHeartRateData() {
         Log.i(TAG, "Registering for background data.")
         try {
-            passiveMonitoringClient.registerDataCallback(dataTypes, pendingIntent)?.await()
+            passiveMonitoringClient.registerDataCallback(dataTypes, pendingIntent).await()
         } catch (cause: Exception) {
             Log.v(TAG, "Error register heart rate callback: ${cause.message}")
         }
@@ -64,7 +64,7 @@ class HealthServicesManager @Inject constructor(
     suspend fun unregisterForHeartRateData() {
         Log.i(TAG, "Unregistering for background data.")
         try {
-            passiveMonitoringClient.unregisterDataCallback()?.await()
+            passiveMonitoringClient.unregisterDataCallback().await()
         } catch (cause: Exception) {
             Log.v(TAG, "Error unregister heart rate callback: ${cause.message}")
         }

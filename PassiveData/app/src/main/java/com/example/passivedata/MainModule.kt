@@ -17,6 +17,7 @@
 package com.example.passivedata
 
 import android.content.Context
+import android.util.Log
 import androidx.health.services.client.HealthServices
 import androidx.health.services.client.HealthServicesClient
 import dagger.Module
@@ -24,6 +25,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.lang.Exception
 import javax.inject.Singleton
 
 /**
@@ -34,10 +36,22 @@ import javax.inject.Singleton
 class MainModule {
     @Singleton
     @Provides
-    fun provideHealthServicesClient(@ApplicationContext context: Context): HealthServicesClient =
-        HealthServices.getClient(context)
+    fun provideHealthServicesClient(@ApplicationContext context: Context): HealthServicesClient {
+        var client: HealthServicesClient? = null
+        try {
+            client = HealthServices.getClient(context)
+        } catch (cause: Exception) {
+            Log.e(TAG, "can not get HealthService due to ${cause.message}")
+        }
+        return HealthServices.getClient(context)
+    }
+
 
     @Singleton
     @Provides
     fun provideDataStore(@ApplicationContext context: Context) = context.dataStore
+
+    companion object {
+        val TAG: String = MainModule::class.java.simpleName
+    }
 }

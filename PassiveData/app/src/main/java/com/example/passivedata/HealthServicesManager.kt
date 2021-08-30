@@ -23,8 +23,10 @@ import android.util.Log
 import androidx.concurrent.futures.await
 import androidx.health.services.client.HealthServicesClient
 import androidx.health.services.client.data.DataType
+import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import kotlin.Exception
 
 /**
  * Entry point for [HealthServicesClient] APIs. This also provides suspend functions around
@@ -43,6 +45,8 @@ class HealthServicesManager @Inject constructor(
         PendingIntent.getBroadcast(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
+
+
     suspend fun hasHeartRateCapability(): Boolean {
         val capabilities = passiveMonitoringClient.capabilities.await()
         return (DataType.HEART_RATE_BPM in capabilities.supportedDataTypesPassiveMonitoring)
@@ -50,11 +54,19 @@ class HealthServicesManager @Inject constructor(
 
     suspend fun registerForHeartRateData() {
         Log.i(TAG, "Registering for background data.")
-        passiveMonitoringClient.registerDataCallback(dataTypes, pendingIntent).await()
+        try {
+            passiveMonitoringClient.registerDataCallback(dataTypes, pendingIntent)?.await()
+        } catch (cause: Exception) {
+            Log.v(TAG, "Error register heart rate callback: ${cause.message}")
+        }
     }
 
     suspend fun unregisterForHeartRateData() {
         Log.i(TAG, "Unregistering for background data.")
-        passiveMonitoringClient.unregisterDataCallback().await()
+        try {
+            passiveMonitoringClient.unregisterDataCallback()?.await()
+        } catch (cause: Exception) {
+            Log.v(TAG, "Error unregister heart rate callback: ${cause.message}")
+        }
     }
 }

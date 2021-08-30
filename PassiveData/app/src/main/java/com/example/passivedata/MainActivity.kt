@@ -27,6 +27,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.passivedata.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import kotlin.math.round
 
 /**
  * Activity displaying the app UI. Notably, this binds data from [MainViewModel] to views on screen,
@@ -77,7 +78,8 @@ class MainActivity : AppCompatActivity() {
         }
         lifecycleScope.launchWhenStarted {
             viewModel.latestHeartRate.collect {
-                binding.lastMeasuredValue.text = it.toString()
+                // binding.lastMeasuredValue.text = it.toString()
+                binding.lastMeasuredValue.text = it.round(1).toString()
             }
         }
         lifecycleScope.launchWhenStarted {
@@ -103,5 +105,14 @@ class MainActivity : AppCompatActivity() {
             binding.lastMeasuredValue.isVisible = it
             binding.heart.isVisible = it
         }
+    }
+
+    /* Extension function for round
+     * https://discuss.kotlinlang.org/t/how-do-you-round-a-number-to-n-decimal-places/8843
+     */
+    fun Double.round(decimals: Int): Double {
+        var multiplier = 1.0
+        repeat(decimals) { multiplier *= 10 }
+        return round(this * multiplier) / multiplier
     }
 }
